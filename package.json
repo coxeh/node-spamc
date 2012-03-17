@@ -1,0 +1,15 @@
+{
+	"name":"node-spamc",
+	"version":"0.0.1",
+	"author":"Carl Glaysher <carl@coxeh.com>",
+	"description":"Connect to spamassassin via spamd daemon and check spam score on a email",
+	"contributors":[
+		{
+			"name":"Carl Glaysher",
+			"email":"carl@coxeh.com"
+		}
+	],
+	"main":"./spamc.js",
+	"engines": { "node": ">= 0.4.0" },
+	"keywords":["spamd","spamc","spamassassin","email","spam"]
+}
