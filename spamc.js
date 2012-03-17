@@ -1,8 +1,20 @@
 /**
  * Author: Carl Glaysher
- * Date: 17/03/2012
- * Time: 08:47
- * Description: Module to Emulate SPAMC Client in a node way
+ * Date Created: 17/03/2012
+ * Description: Module to emulate SPAMC client in a node way
+ * Available Commands:
+ *
+ *  ping - returns boolean
+ *  check - returns object
+ *  symbols - returns object with matches
+ *  report  - returns objects with matches and descriptions
+ *  reportIfSpam - returns object with matches and descriptions
+ *  process - returns object with modified message
+ *  headers - returns object with modified headers only
+ *  learn - TELL spamassassin message is Spam or Ham
+ *  tell - TELL spamassassin message is Spam
+ *  revoke - remove Spammed Message as being spam from spamassassin
+ *
  */
 var net = require('net');
 
@@ -37,7 +49,7 @@ var spamc = function (host, port, timeout) {
     this.check = function(message,onResponse){
         exec('CHECK',message,function(data){
             var response = processResponse('CHECK',data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         });
         return self;
     };
@@ -50,7 +62,7 @@ var spamc = function (host, port, timeout) {
     this.symbols = function(message,onResponse){
         exec('SYMBOLS',message,function(data){
             var response = processResponse('SYMBOLS',data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         });
         return self;
     };
@@ -63,7 +75,7 @@ var spamc = function (host, port, timeout) {
     this.report = function(message,onResponse){
         exec('REPORT',message,function(data){
             var response = processResponse('REPORT',data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         });
         return self;
     };
@@ -76,7 +88,7 @@ var spamc = function (host, port, timeout) {
     this.reportIfSpam = function(message,onResponse){
         exec('REPORT_IFSPAM',message,function(data){
             var response = processResponse('REPORT_IFSPAM',data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         });
         return self;
     };
@@ -89,7 +101,7 @@ var spamc = function (host, port, timeout) {
     this.process = function(message,onResponse){
         exec('PROCESS',message,function(data){
             var response = processResponse('PROCESS',data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         });
         return self;
     };
@@ -102,7 +114,7 @@ var spamc = function (host, port, timeout) {
     this.headers = function(message,onResponse){
         exec('HEADERS',message,function(data){
             var response = processResponse('HEADERS',data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         });
         return self;
     };
@@ -144,8 +156,7 @@ var spamc = function (host, port, timeout) {
             if(response.responseCode==69){
                 throw new Error('TELL commands are not enabled, set the --allow-tell switch.');
             }
-            console.log(data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         },headers);
         return self;
     };
@@ -165,8 +176,7 @@ var spamc = function (host, port, timeout) {
             if(response.responseCode==69){
                 throw new Error('TELL commands are not enabled, set the --allow-tell switch.');
             }
-            console.log(data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         },headers);
         return self;
     };
@@ -186,8 +196,7 @@ var spamc = function (host, port, timeout) {
             if(response.responseCode==69){
                 throw new Error('TELL commands are not enabled, set the --allow-tell switch.');
             }
-            console.log(data);
-            onResponse(response);
+            if(typeof(onResponse)=='function') onResponse(response);
         },headers);
         return self;
     };
@@ -217,10 +226,10 @@ var spamc = function (host, port, timeout) {
                 }
                 cmd = cmd+"\r\n"+message;
             }
-            stream.write(cmd);
+            stream.write(cmd+"\r\n");
         });
         stream.on('error',function(data){
-            throw new Error('spamd returned a error:'+data.toString());
+            throw new Error('spamd returned a error: '+data.toString());
         });
         stream.on('data',function(data){
             var data = data.toString();
@@ -274,7 +283,7 @@ var spamc = function (host, port, timeout) {
                 }
             }
             if(result==null && cmd!='PROCESS'){
-                var pattern = /\s([0-9\.]+)\s([A-Z0-9\_]+)\s([^:]+)\:\s([^\n]+)/g;
+                var pattern = /(\s|-)([0-9\.]+)\s([A-Z0-9\_]+)\s([^:]+)\:\s([^\n]+)/g;
                 var result = lines[i].match(pattern);
                 if(result!=null){
                     returnObj.report =[];
@@ -282,13 +291,13 @@ var spamc = function (host, port, timeout) {
                         /* Remove New Line if Found */
                         result[ii] = result[ii].replace(/\n([\s]*)/, ' ');
                         /* Match Sections */
-                        var pattern = /\s([0-9\.]+)\s([A-Z0-9\_]+)\s([^:]+)\:\s([^\s]+)/;
+                        var pattern = /(\s|-)([0-9\.]+)\s([A-Z0-9\_]+)\s([^:]+)\:\s([^\s]+)/;
                         var matches = result[ii].match(pattern);
                         returnObj.report[returnObj.report.length] = {
-                            score:matches[1],
-                            name:matches[2],
-                            description:matches[3].replace(/^\s*([\S\s]*)\b\s*$/, '$1'),
-                            type:matches[4]
+                            score:matches[2],
+                            name:matches[3],
+                            description:matches[4].replace(/^\s*([\S\s]*)\b\s*$/, '$1'),
+                            type:matches[5]
                         };
                     }
                 }
