@@ -25,11 +25,11 @@ Example
 --------------
 This example will parse a message to spamassassin to perform a report and will callback on success. 
 
-`var spamc = require('./spamc');`
-`var client = new spamc();`
+```var spamc = require('./spamc');
+var client = new spamc();
 
-`client.report('My Message as String',function(result){`
-`console.log(result);`
-`});`
+client.report('My Message as String',function(result){
+console.log(result);
+});```
   
     
