@@ -1,5 +1,4 @@
-node-spamc
-=========
+# node-spamc
 
 node-spamc is a nodejs module that connects to spamassassin's spamd daemon. You are able to:
 
@@ -7,8 +6,7 @@ node-spamc is a nodejs module that connects to spamassassin's spamd daemon. You 
   - Ability to send messages to spamassassin to learn from
   - Ability to do everything that `spamc` is capable of
 
-Commands Available
---------------
+## Commands Available
 
   - `check` checks a message for a spam score and returns an object of information
   - `symbols` like `check` but also returns what the message matched on
@@ -21,15 +19,16 @@ Commands Available
   - `revoke` abilty to tell spamassassin that the message is not spam
 
 
-Example
---------------
-This example will parse a message to spamassassin to perform a report and will callback on success. 
+## Example
 
-```var spamc = require('./spamc');
-var client = new spamc();
+This example will parse a message to spamassassin to perform a report and will callback on success.
 
-client.report('My Message as String',function(result){
-console.log(result);
-});```
-  
+    var spamc = require('./spamc');
+    var client = new spamc();
+
+    client.report('My Message as String',function(result){
+        console.log(result);
+    });
+
+
     
