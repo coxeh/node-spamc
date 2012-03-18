@@ -9,7 +9,10 @@
 			"email":"carl@coxeh.com"
 		}
 	],
+	"repository": {
+    	"type": "git",
+    	"url": "https://github.com/coxeh/node-spamc"
+  	},
 	"main":"./index.js",
-	"engines": { "node": ">= 0.4.0" },
 	"keywords":["spamd","spamc","spamassassin","email","spam"]
 }
